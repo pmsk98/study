@@ -1,0 +1,607 @@
+install.packages("tidyverse")
+
+library(tidyverse)
+
+setwd("C:/Users/pmsk9/Desktop/연구")
+
+dir <-c("C:/Users/pmsk9/Desktop/연구/200위 주가")
+
+file_list <-list.files(dir)
+
+data <-data.frame()
+
+#파일 합치기
+for(file in file_list){
+  print(file)
+  temp <-read.csv(paste(dir,file,sep="\\"),header=T,sep=",")
+  temp$종목명 <- substring(file, 1, nchar(file)-4)
+  data <-rbind(data,temp)
+}
+data
+
+data
+
+
+data <-subset(data,select = c('날짜','종목명','현재가'))
+data
+
+
+#2019년도 데이터만 뽑기
+data<-subset(data,substr(data$날짜,1,4)==2019)
+
+library(quantmod)
+
+
+a <-data %>%group_by(종목명) %>%
+  summarise(ROC(현재가))
+
+data
+
+
+data2 <- cbind(data.frame(a), data[1])
+
+data <-rename(data2,"수익률"="ROC.현재가.")
+
+data <-na.omit(data)
+#기업별 평균 수익률
+mean_return<-data %>%
+  group_by(종목명) %>%
+  summarize(mean(수익률))
+#상승종목으로
+mean_return <-mean_return %>%
+  arrange(desc(mean_return$`mean(수익률)`))
+mean_return <-as.data.frame(mean_return)
+#하락종목으로
+mean_return <-mean_return %>%
+  arrange(-desc(mean_return$`mean(수익률)`))
+mean_return <-as.data.frame(mean_return)
+
+
+
+min(mean_return$`mean(수익률)`)
+a <-mean_return[1:20,]
+b <-mean_return[21:40,]
+c <-mean_return[41:60,]
+d <-mean_return[61:80,]
+e <-mean_return[81:100,]
+f <-mean_return[101:120,]
+g <-mean_return[121:140,]
+h <-mean_return[141:160,]
+i <-mean_return[161:180,]
+j <-mean_return[181:200,]
+#1~20
+ggplot(a,aes(a$종목명,a$`mean(수익률)`,fill=a$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(b,aes(b$종목명,b$`mean(수익률)`,fill=b$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(c,aes(c$종목명,c$`mean(수익률)`,fill=c$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(d,aes(d$종목명,d$`mean(수익률)`,fill=d$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(e,aes(e$종목명,e$`mean(수익률)`,fill=e$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(f,aes(f$종목명,f$`mean(수익률)`,fill=f$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(g,aes(g$종목명,g$`mean(수익률)`,fill=g$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(h,aes(h$종목명,h$`mean(수익률)`,fill=h$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(i,aes(i$종목명,i$`mean(수익률)`,fill=i$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(j,aes(j$종목명,j$`mean(수익률)`,fill=j$`mean(수익률)`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+#기업별 평균 표준편차
+mean_sd <-data %>%
+  group_by(종목명) %>%
+  summarize(mean(sd(수익률)))
+
+mean_sd <-as.data.frame(mean_sd)
+min(mean_sd$`mean(sd(수익률))`)
+
+a <-mean_sd[1:20,]
+b <-mean_sd[21:40,]
+c <-mean_sd[41:60,]
+d <-mean_sd[61:80,]
+e <-mean_sd[81:100,]
+f <-mean_Sd[101:120,]
+g <-mean_Sd[121:140,]
+h <-mean_sd[141:160,]
+i <-mean_sd[161:180,]
+j <-mean_sd[181:200,]
+#1~20
+ggplot(a,aes(a$종목명,a$`mean(sd(수익률))`,fill=a$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(b,aes(b$종목명,b$`mean(sd(수익률))`,fill=b$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(c,aes(c$종목명,c$`mean(sd(수익률))`,fill=c$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(d,aes(d$종목명,d$`mean(sd(수익률))`,fill=d$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(e,aes(e$종목명,e$`mean(sd(수익률))`,fill=e$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(f,aes(f$종목명,f$`mean(sd(수익률))`,fill=f$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(g,aes(g$종목명,g$`mean(sd(수익률))`,fill=g$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(h,aes(h$종목명,h$`mean(sd(수익률))`,fill=h$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(i,aes(i$종목명,i$`mean(sd(수익률))`,fill=i$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggplot(j,aes(j$종목명,j$`mean(sd(수익률))`,fill=j$`mean(sd(수익률))`))+geom_bar(stat='identity') +theme(axis.text.x=element_text(angle=60, hjust=1))
+
+
+
+
+
+
+
+
+temp <-na.omit(temp)
+temp <- data %>% dcast(날짜~종목명, value.var='수익률')
+
+temp <-na.omit(temp)
+#기업별 수익률 상관계수
+corr <- cor(temp,method = 'pearson')
+corr <- corr[-1,]
+corr <- corr[,-1]
+#상관계수 그래프
+install.packages("corrplot")
+library(corrplot)
+
+a <-corr[1:10,1:10]
+corrplot(a,method='number')
+
+#구간 나누기
+#-0.6~-0.4
+#-0.4~-0.2
+#-0.2~0.0
+#0.0~0.2
+#0.2~0.4
+#0.4~0.6
+#0.6~0.8
+#0.8~1.0
+
+library(igraph)
+#종목별 상관계수
+corr_result <-as.data.frame(corr)
+summary(corr_result)
+min(corr_result)
+min_cor <- -0.6
+max_cor <- -0.4
+
+get_corr_range <- function(data, min_cor, max_cor) {
+  result <- data.frame()
+  for (i in 1:200) {
+    name1 <- names(data)[i]
+    temp <- subset(data[i], min_cor <= data[i] & data[i] < max_cor)
+    name2 <- rownames(temp)
+    if (nrow(temp) > 0) {
+      result <- rbind(result, data.frame(cat1=name1, cat2=name2, val=temp[[1]]))
+    }
+  }
+  return(result)
+}
+
+table1 <-get_corr_range(corr_result, -0.6, -0.4)
+
+table2 <-get_corr_range(corr_result,-0.4,-0.2)
+
+table3 <-get_corr_range(corr_result,-0.2,0)
+
+table4 <-get_corr_range(corr_result,0,0.2)
+
+table5 <-get_corr_range(corr_result,0.2,0.4)
+
+table6 <-get_corr_range(corr_result,0.4,0.6)
+
+table7 <-get_corr_range(corr_result,0.6,0.8)
+
+table8 <-get_corr_range(corr_result,0.8,1)
+
+#소셜네트워크
+library(tidygraph)
+library(ggraph)
+
+#table1
+g <-graph.data.frame(table1,directed = F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+between$membership
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  else if(v %in% between[[7]]) colors<-c(colors,'black')
+  else if(v %in% between[[8]]) colors<-c(colors,'gray')
+  else if(v %in% between[[9]]) colors<-c(colors,'purple')
+  else if(v %in% between[[10]]) colors<-c(colors,'cyan')
+  else if(v %in% between[[11]]) colors<-c(colors,'beige')
+  else if(v %in% between[[12]]) colors<-c(colors,'aquamarine')
+}
+plot(g,vertex.size=5,vertex.color=colors)
+#네트워크 수준분석
+length(V(g))
+length(E(g))
+edge_density(g)
+triad_census(g)
+table(degree(g))
+diameter(g)
+components(g)
+
+eigen_centrality(g)
+which.max(eigen_centrality(g)$vector)  
+
+reciprocity(g)
+dyad_census(g)
+components(g)
+closeness(g)
+
+
+#table2
+g <-graph.data.frame(table2[1:150,],directed=F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  else if(v %in% between[[7]]) colors<-c(colors,'black')
+  
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
+
+g1 <-graph.data.frame(table2[151:333,],directed = F)
+plot(g1,layout=layout.kamada.kawai,vertex.size=1)
+
+between <-edge.betweenness.community(g1)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g1)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  else if(v %in% between[[7]]) colors<-c(colors,'black')
+  else if(v %in% between[[8]]) colors<-c(colors,'gray')
+  else if(v %in% between[[9]]) colors<-c(colors,'purple')
+  else if(v %in% between[[10]]) colors<-c(colors,'cyan')
+}
+
+plot(g1,vertex.size=5,vertex.color=colors)
+
+#table3
+g <-graph.data.frame(table3[1:150,],directed=F)
+plot(g ,layout=layout.kamada.kawai,vertex.size=1)
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
+
+g1 <-graph.data.frame(table3[151:333,],directed=F)
+plot(g1,layout=layout.kamada.kawai,vertex.size=1)
+between <-edge.betweenness.community(g1)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g1)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+
+}
+
+plot(g1,vertex.size=5,vertex.color=colors)
+
+
+
+#table4
+g <-graph.data.frame(table4[1:150,],directed = F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+
+  
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
+
+
+g1 <-graph.data.frame(table4[151:333,],directed = F)
+plot(g1,layout=layout.kamada.kawai,vertex.size=1)
+
+between <-edge.betweenness.community(g1)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g1)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  
+}
+
+plot(g1,vertex.size=5,vertex.color=colors)
+
+#table5
+g <-graph.data.frame(table5[1:150,],directed = F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  
+  
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
+
+
+g1 <-graph.data.frame(table5[151:333,],directed = F)
+plot(g1,layout=layout.kamada.kawai,vertex.size=1)
+between <-edge.betweenness.community(g1)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g1)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  
+  
+}
+
+plot(g1,vertex.size=5,vertex.color=colors)
+
+
+#table6
+table6
+g <-graph.data.frame(table6[1:150,],directed=F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  
+  
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
+
+
+g1 <-graph.data.frame(table6[151:333,],directed = F)
+plot(g1,layout=layout.kamada.kawai,vertex.size=1)
+between <-edge.betweenness.community(g1)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g1)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  
+  
+}
+
+plot(g1,vertex.size=5,vertex.color=colors)
+
+
+#table7
+table7
+g <-graph.data.frame(table7[1:150,],directed = F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  else if(v %in% between[[7]]) colors<-c(colors,'black')
+  else if(v %in% between[[8]]) colors<-c(colors,'gray')
+  else if(v %in% between[[9]]) colors<-c(colors,'purple')
+  else if(v %in% between[[10]]) colors<-c(colors,'cyan')
+  else if(v %in% between[[11]]) colors<-c(colors,'beige')
+  else if(v %in% between[[12]]) colors<-c(colors,'aquamarine')
+  else if(v %in% between[[13]]) colors <-c(colors,'antiquewhite4')
+  else if(v %in% between[[14]]) colors <-c(colors,'darkgoldenrod')
+  else if(v %in% between[[15]]) colors <-c(colors,'darkblue')
+  
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
+
+
+g1 <-graph.data.frame(table7[151:333,],directed = F)
+plot(g1,layout=layout.kamada.kawai,vertex.size=1)
+between <-edge.betweenness.community(g1)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g1)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  else if(v %in% between[[7]]) colors<-c(colors,'black')
+  else if(v %in% between[[8]]) colors<-c(colors,'gray')
+  else if(v %in% between[[9]]) colors<-c(colors,'purple')
+  else if(v %in% between[[10]]) colors<-c(colors,'cyan')
+  else if(v %in% between[[11]]) colors<-c(colors,'beige')
+  else if(v %in% between[[12]]) colors<-c(colors,'aquamarine')
+  else if(v %in% between[[13]]) colors <-c(colors,'antiquewhite4')
+  else if(v %in% between[[14]]) colors <-c(colors,'darkgoldenrod')
+  else if(v %in% between[[15]]) colors <-c(colors,'darkblue')
+  else if(v %in% between[[16]]) colors <-c(colors,'bisque')
+  else if(v %in% between[[17]]) colors <-c(colors,'SteelBlue')
+  else if(v %in% between[[18]]) colors <-c(colors,'DeepPink')
+  
+  
+}
+
+plot(g1,vertex.size=5,vertex.color=colors)
+
+#0.8~1
+g <-graph.data.frame(table8,directed = F)
+plot(g,layout=layout.kamada.kawai,vertex.size=1)
+
+#네트워크 커뮤니티 탐지
+between <-edge.betweenness.community(g)
+result <-data.frame()
+
+for (i in 1:length(between)){
+  result <-rbind(result,data.frame(group=i,size=length(between[[i]])))
+}
+result
+
+colors <-c()
+
+for(v in V(g)$name){
+  if(v %in% between[[1]]) colors <-c(colors,'red')
+  else if(v %in% between[[2]]) colors<-c(colors,'blue')
+  else if(v %in% between[[3]]) colors<-c(colors,'yellow')
+  else if(v %in% between[[4]]) colors<-c(colors,'orange')
+  else if(v %in% between[[5]]) colors<-c(colors,'green')
+  else if(v %in% between[[6]]) colors<-c(colors,'pink')
+  else if(v %in% between[[7]]) colors<-c(colors,'black')
+  else if(v %in% between[[8]]) colors<-c(colors,'gray')
+
+  
+}
+
+plot(g,vertex.size=5,vertex.color=colors)
