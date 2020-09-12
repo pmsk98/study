@@ -1,7 +1,7 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep 11 21:37:28 2020
-
 @author: pmsk9
 """
 
@@ -71,7 +71,45 @@ ULTOSC=talib.ULTOSC(apple.High,apple.Low,apple.Close,timeperiod1=7,timeperiod2=1
 WILLR=talib.WILLR(apple.High,apple.Low,apple.Close,timeperiod=14)
 
 
+apple['ADX']=ADX
+apple['ADXR']=ADXR
+apple['APO']=APO
+apple['aroondown']=aroondown
+apple['aroonup']=aroonup
+apple['AROONOSC']=AROONOSC
+apple['BOP']=BOP
+apple['CCI']=CCI
+apple['CMO']=CMO
+apple['DX']=DX
+apple['MACD']=macd
+apple['macdsignal']=macdsignal
+apple['macdhist']=macdhist
+apple['ma_macd']=ma_macd
+apple['ma_macdsignal']=ma_macdsignal
+apple['ma_macdhist']=ma_macdhist
+apple['fix_macd']=fix_macd
+apple['fix_macdsignal']=fix_macdsignal
+apple['fix_macdhist']=fix_macdhist
+apple['MFI']=MFI
+apple['MINUS_DI']=MINUS_DI
+apple['MINUS_DM']=MINUS_DM
+apple['MOM']=MOM
+apple['PLUS_DM']=PLUS_DM
+apple['PPO']=PPO
+apple['ROC']=ROC
+apple['ROCP']=ROCP
+apple['ROCR']=ROCR
+apple['ROCR100']=ROCR100
+apple['RSI']=RSI
+apple['slowk']=slowk
+apple['slowd']=slowd
+apple['fastk']=fastk
+apple['fastd']=fastd
+apple['TRIX']=TRIX
+apple['ULTOSC']=ULTOSC
+apple['WILLR']=WILLR
 
-apple.Adjusted
-apple.low
+apple.columns
 
+
+apple.to_csv('apple_stock_.csv')
