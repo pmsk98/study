@@ -8,7 +8,7 @@ Created on Fri Sep 11 21:37:28 2020
 #주가 classification
 import pandas as pd
 import  talib
-
+import numpy as np
 apple =pd.read_csv('C:/Users/pmsk9/Desktop/연구/ticker 주가/AAPL.csv')
 
 
@@ -113,3 +113,15 @@ apple.columns
 
 
 apple.to_csv('apple_stock_.csv')
+
+#오르면 1 내리면 0 (전날 종가 기준)
+def add_label(apple):
+    idx=len(apple.columns)
+    new_col=np.where(apple['Close']>=apple['Close'].shift(1),1,0)
+    apple.insert(loc=idx,column='Label',value=new_col)
+    apple=apple.fillna(0)
+
+add_label(apple)
+apple.head()
+
+apple.to_csv('apple_stock_label.csv')
