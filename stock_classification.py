@@ -9,6 +9,12 @@ Created on Fri Sep 11 21:37:28 2020
 import pandas as pd
 import  talib
 import numpy as np
+
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+from sklearn.svm import SVC
+
 apple =pd.read_csv('C:/Users/pmsk9/Desktop/연구/ticker 주가/AAPL.csv')
 
 
@@ -125,3 +131,41 @@ add_label(apple)
 apple.head()
 
 apple.to_csv('apple_stock_label.csv')
+#컬럼이름 변경
+apple =apple.rename(columns={'Unnamed: 0':'Date'})
+
+
+#train data 생성
+train =apple['Date'].str.contains('2014|2015|2016|2017|2018')
+train_data = apple[train]
+#train data 생성
+x_train=train_data.drop(['Date','Label'],axis=1)
+y_train=train_data['Label']
+
+#test data 생성
+test =apple['Date'].str.contains('2019')
+test_data =apple[test]
+
+x_test=test_data.drop(['Date','Label'],axis=1)
+y_test=test_data['Label']
+
+#####모델######
+def svc_param_selection(X,y,nfolds):
+    svm_parameters=[
+        {'kernel':['rbf'],
+         'gamma':[0.00001,0.0001,0.001,0.01,0.1,1]
+         ,'C':[0.01,0.1,1,10,100,1000]}]
+    clf =GridSearchCV(SVC(), svm_parameters, cv=10)
+    clf.fit(x_train,y_train.values.ravel())
+    print(clf.best_params_)
+    
+    return clf
+
+    
+clf = svc_param_selection(x_train, y_train, 10)
+
+
+y_true , y_pred =y_test,clf.predict(x_test)
+
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
