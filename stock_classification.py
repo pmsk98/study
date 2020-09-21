@@ -123,7 +123,7 @@ apple.to_csv('apple_stock_.csv')
 #오르면 1 내리면 0 (전날 종가 기준)
 def add_label(apple):
     idx=len(apple.columns)
-    new_col=np.where(apple['Close']>=apple['Close'].shift(1),1,0)
+    new_col=np.where(apple['Close']>=apple['Close'].shift(1),'up','down')
     apple.insert(loc=idx,column='Label',value=new_col)
     apple=apple.fillna(0)
 
@@ -161,11 +161,120 @@ def svc_param_selection(X,y,nfolds):
     
     return clf
 
-    
+#rbf ->클래스 1만 나와서 linear로 바꿔서 진행 
 clf = svc_param_selection(x_train, y_train, 10)
 
 
 y_true , y_pred =y_test,clf.predict(x_test)
 
+
+#정규화 모델링
+clf = svc_param_selection(x_scaled, y_train, 10)
+
+
+y_true , y_pred =y_test,clf.predict(x_test_scaled)
+
+
 print(classification_report(y_true,y_pred))
 print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+from sklearn.metrics import confusion_matrix
+confusion_matrix(y_true,y_pred)
+
+comparison=pd.DataFrame({'prediction':y_pred,
+                         'ground_truth':y_true.values.ravel()})
+comparison
+
+#정규화 standardScaling
+from sklearn.preprocessing import StandardScaler
+
+scaler =StandardScaler()
+scaler.fit(x_train)
+
+x_scaled =scaler.transform(x_train)
+x_test_scaled=scaler.transform(x_test)
+
+
+
+clf = SVC(x_scaled, y_train, 10)
+
+
+y_true , y_pred =y_test,clf.fit(x_test_scaled,y_test.values.ravel())
+
+
+########최종모델
+#grid search 해야함
+scaler =StandardScaler()
+scaler.fit(x_train)
+
+x_train_sc=scaler.transform(x_train)
+x_test_sc=scaler.transform(x_test)
+
+ml = SVC(kernel='rbf',C=1.0,random_state=0)
+ml.fit(x_train_sc,y_train)
+
+y_pred=ml.predict(x_test_sc)
+y_true=y_test.values.ravel()
+
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+
+comparison=pd.DataFrame({'prediction':y_pred,
+                         'ground_truth':y_true})
+
+confusion_matrix(y_true,y_pred)
+comparison
+
+
+#데이터 시각화
+
+#linear가 rbf보다 더 accuracy 측면에서 더 좋음
+
+
+
+def svc_param_selection(X,y,nfolds):
+    svm_parameters=[
+        {'kernel':['rbf'],
+         'gamma':[0.00001,0.0001,0.001,0.01,0.1,1]
+         ,'C':[0.01,0.1,1,10,100,1000]}]
+    clf =GridSearchCV(SVC(), svm_parameters, cv=10)
+    clf.fit(x_train_sc,y_train.values.ravel())
+    print(clf.best_params_)
+    
+    return clf
+
+#rbf ->클래스 1만 나와서 linear로 바꿔서 진행 
+clf = svc_param_selection(x_train_sc, y_train, 10)
+
+
+y_true , y_pred =y_test,clf.predict(x_test_sc)
+
+
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+from sklearn.metrics import confusion_matrix
+confusion_matrix(y_true,y_pred)
+
+comparison=pd.DataFrame({'prediction':y_pred,
+                         'ground_truth':y_true.values.ravel()})
+comparison
+
+c_canditates=[]
+c_canditates.append(clf.best_params_['C']*0.01)
+c_canditates.append(clf.best_params_['C'])
+c_canditates.append(clf.best_params_['C']*100)
+
+gamma_candidates =[]
+gamma_candidates.append(clf.bset_parmas_['gamma']*0.01)
+gamma_candidates.append(clf.best_params_['gamma'])
+gamma_candidates.append(clf.best_params_['gamma']*100)
+
+label =[]
+apple.head()
+for gt in apple.Label:
+    if gt=='down':
+        Label.append(0)
+    else:
+        Label.append(1)
