@@ -273,7 +273,7 @@ plt.figure(figsize=(100,100))
 sns.heatmap(confusion,annot=True,fmt='d')
 
 
-#로지스틱 회귀분석
+####로지스틱 회귀분석
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 import statsmodels.api as sm
@@ -290,12 +290,13 @@ y_true=y_test
 print(classification_report(y_true,y_pred))
 print("accuracy:"+str(accuracy_score(y_true, y_pred)))
 
+logistic.score(x_train,y_train)
 #gridsearch
 from sklearn.model_selection import GridSearchCV
 
 gird ={"C":np.logspace(-3,3,7),"penalty":["l1","l2"]} #l1:lasso l2:ridge
 logistic=LogisticRegression()
-log_cv =GridSearchCV(logistic,gird,cv=10)
+log_cv =GridSearchCV(logistic,gird,cv=3)
 
 log_cv.fit(x_train,y_train)
 
@@ -304,10 +305,96 @@ print("tuned hpyerparameters :(best parameters) ",log_cv.best_params_)
 #train set 성능
 print("accuracy :",log_cv.best_score_)
 
+log_cv.score(x_train,y_train)
 y_pred=log_cv.predict(x_test)
 
 y_true=y_test
 
 print(classification_report(y_true,y_pred))
 print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+##########knn
+#default
+from sklearn.neighbors import KNeighborsClassifier
+
+knn =KNeighborsClassifier()
+
+knn.fit(x_train,y_train)
+
+y_pred=knn.predict(x_test)
+
+y_true=y_test
+
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+knn.score(x_train,y_train)
+#gridsearch cv
+leaf_size = list(range(1,50))
+n_neighbors = list(range(1,30))
+p=[1,2]
+hyperparameters = dict(leaf_size=leaf_size, n_neighbors=n_neighbors, p=p)
+#Create new KNN object
+knn_2 = KNeighborsClassifier()
+#Use GridSearch
+knn_cv = GridSearchCV(knn_2, hyperparameters, cv=10)
+#Fit the model
+best_model = knn_cv.fit(x_train,y_train)
+#Print The value of best Hyperparameters
+print('Best leaf_size:', best_model.best_estimator_.get_params()['leaf_size'])
+print('Best p:', best_model.best_estimator_.get_params()['p'])
+print('Best n_neighbors:', best_model.best_estimator_.get_params()['n_neighbors'])
+print("accuracy :",knn_cv.best_score_)
+y_pred=best_model.predict(x_test)
+
+y_true=y_test
+knn_cv.score(x_train,y_train)
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+
+#naivebayes
+#default
+from sklearn.naive_bayes import GaussianNB
+
+naive=GaussianNB()
+
+naive.fit(x_train,y_train)
+
+y_pred=naive.predict(x_test)
+
+y_true=y_test
+
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+naive.score(x_train,y_train)
+
+
+#gridsearch cv
+parameters = {
+    'priors': [None],
+    'var_smoothing': [0.00000001, 0.000000001, 0.00000001]
+}
+
+naive2 =GaussianNB()
+
+naive_cv=GridSearchCV(naive2, parameters , cv=10)
+
+best_model = naive_cv.fit(x_train,y_train)
+
+print("tuned hpyerparameters :(best parameters) ",naive_cv.best_params_)
+print('Best n_neighbors:', best_model.best_estimator_.get_params()['priors'])
+print('Best n_neighbors:', best_model.best_estimator_.get_params()['n_neighbors'])
+
+
+y_pred=best_model.predict(x_test)
+
+y_true=y_test
+
+print(classification_report(y_true,y_pred))
+print("accuracy:"+str(accuracy_score(y_true, y_pred)))
+
+best_model.score(x_train,y_train)
+
 
