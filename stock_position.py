@@ -155,20 +155,20 @@ test_data =apple[test]
 x_test=test_data.drop(['Date','Label','Open','High','Low','Close','Volume','Adjusted'],axis=1)
 y_test=test_data['Label']
 
-#knn
-from sklearn.neighbors import KNeighborsClassifier
+#
+from sklearn.linear_model import LogisticRegression
 
-knn =KNeighborsClassifier()
 
-knn.fit(x_train,y_train)
+logistic =LogisticRegression()
 
-y_pred=knn.predict(x_test)
+logistic.fit(x_train,y_train)
+
+y_pred=logistic.predict(x_test)
 
 y_true=y_test
 
 print(classification_report(y_true,y_pred))
 print("accuracy:"+str(accuracy_score(y_true, y_pred)))
-
 
 
 
@@ -212,10 +212,35 @@ sell_position =apple2['position'] =='sell'
 
 sell_label =apple2[sell_position]
 
-
+len(sell_label['Close'])
+len(buy_label['Close'])
 ####
 a=sell_label['Close'].reset_index(drop=True)
 b=buy_label['Close'].reset_index(drop=True)
 #매도 종가 - 매수 종가
 a-b
+
+
+#매도 종가 - 매수 시가
+a=sell_label['Close'].reset_index(drop=True)
+b=buy_label['Open'].reset_index(drop=True)
+
+a-b
+
+#매도 시가 - 매수 종가
+a=sell_label['Open'].reset_index(drop=True)
+b=buy_label['Close'].reset_index(drop=True)
+
+a-b
+
+#매도 시가 - 매수 시가
+a=sell_label['Open'].reset_index(drop=True)
+b=buy_label['Open'].reset_index(drop=True)
+
+a-b
+
+
+
+#2019 position apple csv 
+apple2.to_csv('stock_2019_position.csv')
 
