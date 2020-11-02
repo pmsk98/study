@@ -21,6 +21,8 @@ path = "C:/Users/user/Desktop/연구/ticker주가"
 file_list =os.listdir(path)
 
 df= []
+
+
 for file in file_list:
     path = "C:/Users/user/Desktop/연구/ticker주가"
     
@@ -38,7 +40,10 @@ for i in range(0,34):
     
 train_data=[]
 
+
+
 test_data=[]
+
 
 for i in range(0,34):
     train=df[i]['Date'].str.contains('2014|2015|2016|2017|2018')
@@ -73,6 +78,7 @@ for i in range(0,34):
 #모델링
 from sklearn.linear_model import LogisticRegression
 pred =[]
+
 for i in range(0,34):
     logistic =LogisticRegression()
     logistic.fit(x_train[i],y_train[i])
@@ -226,6 +232,7 @@ for i in range(0,34):
 for i in range(0,34):
     plt.title('{}'.format(file_list[i]))
     plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum']],color='blue')
+    plt.xticks(size=10)
     plt.show()
     
 
@@ -234,3 +241,86 @@ for i in range(0,34):
     test_2019[i].to_csv('{}'.format(file_list[i]))
 
 #ratio 작성
+import random
+
+
+ratio =pd.DataFrame(data={'stock ticker':file_list[0:34],'NO.trades':[None],'Win%':[None],'Average gain($)':[None],'Average loss($)':[None],'Payoff ratio':[None],'Profit factor':[None]})
+
+
+ratio =pd.DataFrame(columns=['idx','stock ticker','No.trades','Win%','Average gain($)','Average loss($)','Payoff ratio','Profit factor'])
+
+
+
+for i in range(0,34):
+    profit_2[i]=pd.DataFrame(profit_2[i])
+
+#거래횟수
+trade= []
+
+for i in range(0,34):
+    trade.append(len(profit_2[i]))
+    
+#승률
+
+
+for i in range(0,34):
+    profit_2[i]['average']=None
+
+   
+for i in range(0,34):
+    for e in range(len(profit_2[i])):      
+        if profit_2[i]['Adjusted'][e] > 0:
+            profit_2[i]['average'][e]='gain'
+        else:
+            profit_2[i]['average'][e]='loss'
+            
+for i in range(0,34):
+    for e in range(len(profit_2[i])):
+        if profit_2[i]['Adjusted'][e] < 0:
+            profit_2[i]['Adjusted'][e]=profit_2[i]['Adjusted'][e] * -1
+        else:
+            print(i)
+
+win=[]
+for i in range(0,34):
+    win.append(profit_2[i].groupby('average').size()[0]/len(profit_2[i]))
+    
+#평균 수익
+
+gain=[]
+
+for i in range(0,34):
+    gain.append(profit_2[i].groupby('average').mean())
+    
+
+real_gain=[]
+
+for i in range(0,34):
+    real_gain.append(gain[i]['Adjusted'][0])
+    
+#평균 손실
+loss=[]
+
+for i in range(0,34):
+    loss.append(gain[i]['Adjusted'][1])
+  
+#payoff ratio
+payoff=[]
+
+for i in range(0,34):
+    payoff.append(gain[i]['Adjusted'][0]/gain[i]['Adjusted'][1])
+    
+#profit factor
+
+factor_sum=[]
+
+
+for i in range(0,34):
+    factor_sum.append(profit_2[i].groupby('average').sum())
+
+factor=[]
+
+for i in range(0,34):
+    factor.append(factor_sum[i]['Adjusted'][0]/factor_sum[i]['Adjusted'][1])
+    
+test_2019[0]['pred'].value_counts()
