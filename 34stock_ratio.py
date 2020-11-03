@@ -322,5 +322,26 @@ factor=[]
 
 for i in range(0,34):
     factor.append(factor_sum[i]['Adjusted'][0]/factor_sum[i]['Adjusted'][1])
-    
-test_2019[0]['pred'].value_counts()
+
+
+#최종 결과물 파일 작성
+stock_name=pd.DataFrame({'stock_ticker':file_list})
+
+stock_name=stock_name.replace('.csv','',regex=True)
+
+trade=pd.DataFrame({'No.trades':trade})
+
+win=pd.DataFrame({'Win%':win})
+
+real_gain=pd.DataFrame({'Average gain($)':real_gain})
+
+loss=pd.DataFrame({'Average loss($)':loss})
+
+payoff=pd.DataFrame({'Payoff ratio':payoff})
+
+factor=pd.DataFrame({'Profit factor':factor})
+
+result =pd.concat([stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+
+result.to_csv('result_stock_ticker.csv')
