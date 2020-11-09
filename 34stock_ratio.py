@@ -77,13 +77,24 @@ for i in range(0,34):
     
 #모델링
 from sklearn.linear_model import LogisticRegression
-pred =[]
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 
-for i in range(0,34):
-    logistic =LogisticRegression()
-    logistic.fit(x_train[i],y_train[i])
-    
-    pred.append(logistic.predict(x_test[i]))
+
+
+
+pred=[]
+pred_decision=[]
+pred_naive=[]
+pred_randomforest=[]
+pred_svm=[]
+pred_knn=[]
+
+
+        
         
 #예측값 붙이기 19년도 데이터에 붙이기
 test_2019=[]
@@ -96,9 +107,44 @@ for i in range(0,34):
 
 for i in range(0,34):
     test_2019[i]['pred']=pred[i]
+    test_2019[i]['pred_decision']=pred_decision[i]
+    test_2019[i]['pred_naive']=pred_naive[i]
+    test_2019[i]['pred_randomforest']=pred_randomforest[i]
+    test_2019[i]['pred_svm']=pred_svm[i]
+    test_2019[i]['pred_knn']=pred_knn[i]
+    
+    
+#diff 컬럼 생성
+for i in range(0,34):
+    test_2019[i]['diff']=test_2019[i]['Adjusted'].diff()
+    
+for i in range(0,34):
+    test_2019[i]['diff'][1510]=0
+    
+#단순 수익률 시각화
+from datetime import datetime
+import time
+
+time_format="%Y-%m-%d"
 
 
 
+for i in range(0,34):
+    test_2019[i]['Date']=pd.to_datetime(test_2019[i]['Date'],format=time_format)
+
+
+for i in range(0,34):
+    plt.title('{}'.format(file_list[i]))
+    plt.plot(test_2019[i][['Date']],test_2019[i][['diff']],color='blue')
+    plt.xticks(size=10)
+    plt.show()
+    
+
+for i in range(0,34):
+    test_2019[i].to_csv('{}'.format(file_list[i]))
+
+
+#pred 자료형 변경
 for i in range(0,34):
     test_2019[i]['pred']=test_2019[i]['pred'].astype('float')
 
