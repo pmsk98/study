@@ -94,6 +94,46 @@ pred_svm=[]
 pred_knn=[]
 
 
+for i in range(0,34):
+    #logistic
+    logistic =LogisticRegression()
+    logistic.fit(x_train[i],y_train[i])
+    
+    pred.append(logistic.predict(x_test[i]))
+    #decision tree
+    dt=DecisionTreeClassifier()
+    
+    dt.fit(x_train[i],y_train[i])
+    pred_decision.append(dt.predict(x_test[i]))
+    
+    #naive
+    naive=GaussianNB()
+    
+    naive.fit(x_train[i],y_train[i])
+    
+    pred_naive.append(naive.predict(x_test[i]))
+    
+    #randomforest
+    randomforest=RandomForestClassifier()
+    
+    randomforest.fit(x_train[i],y_train[i])
+    
+    pred_randomforest.append(randomforest.predict(x_test[i]))
+    
+    #svm
+    svm=SVC()
+    
+    svm.fit(x_train[i],y_train[i])
+    
+    pred_svm.append(svm.predict(x_test[i]))
+    
+    #knn
+    knn=KNeighborsClassifier()
+    
+    knn.fit(x_train[i],y_train[i])
+    
+    pred_knn.append(knn.predict(x_test[i]))
+
         
         
 #예측값 붙이기 19년도 데이터에 붙이기
@@ -113,35 +153,6 @@ for i in range(0,34):
     test_2019[i]['pred_svm']=pred_svm[i]
     test_2019[i]['pred_knn']=pred_knn[i]
     
-    
-#diff 컬럼 생성
-for i in range(0,34):
-    test_2019[i]['diff']=test_2019[i]['Adjusted'].diff()
-    
-for i in range(0,34):
-    test_2019[i]['diff'][1510]=0
-    
-#단순 수익률 시각화
-from datetime import datetime
-import time
-
-time_format="%Y-%m-%d"
-
-
-
-for i in range(0,34):
-    test_2019[i]['Date']=pd.to_datetime(test_2019[i]['Date'],format=time_format)
-
-
-for i in range(0,34):
-    plt.title('{}'.format(file_list[i]))
-    plt.plot(test_2019[i][['Date']],test_2019[i][['diff']],color='blue')
-    plt.xticks(size=10)
-    plt.show()
-    
-
-for i in range(0,34):
-    test_2019[i].to_csv('{}'.format(file_list[i]))
 
 
 #pred 자료형 변경
@@ -168,9 +179,13 @@ for i in range(0,34):
 for i in range(0,34):
     if test_2019[i]['position'][1511]=='holding':
         test_2019[i]['position'][1511]='buy'
+    elif test_2019[i]['position'][1511]=='sell':
+        test_2019[i]['position'][1511]='buy'
     else:
         print(i)
         
+        
+      
 #강제 청산
 for i in range(0,34):
     if test_2019[i]['position'][1761]=='holding':
@@ -227,6 +242,7 @@ profit_2=[]
 for i in range(0,34):
     profit_2.append(sell[i]-buy[i])
   
+
 for i in range(0,34):
     test_2019[i]['profit_2']=None
     
@@ -246,6 +262,9 @@ for tb, pf in zip(test_2019, profit_2):
 
 for i in range(0,34):
     test_2019[i]['profit_cumsum']=None
+    
+    
+    
 
 #profit 누적 합 
 for i in range(0,34):
@@ -259,9 +278,21 @@ for i in range(0,34):
         else:
             print(i)
 
+
+#새로운 청산 기준 누적합
+
+
+
+for i in range(0,34):
+    test_2019[i]['profit_cumsum2']=None    
+    
+    
 for i in range(0,34):
     test_2019[i]['profit_cumsum']=test_2019[i]['profit_2'].cumsum()
-    
+
+
+
+
 
 ######누적합 그래프
 from datetime import datetime
@@ -273,30 +304,38 @@ time_format="%Y-%m-%d"
 
 for i in range(0,34):
     test_2019[i]['Date']=pd.to_datetime(test_2019[i]['Date'],format=time_format)
+    
+    
+#diff 컬럼 생성(새로운 청산 기준)
+for i in range(0,34):
+    test_2019[i]['diff']=test_2019[i]['Adjusted'].diff()
+    
+for i in range(0,34):
+    test_2019[i]['diff'][1510]=0
 
 
 for i in range(0,34):
+    test_2019[i]['profit_cumsum2']=None
+
+for i in range(0,34):
+    test_2019[i]['profit_cumsum2']=test_2019[i]['diff'].cumsum()
+
+
+
+test_2019[0]['profit_cumsum2']
+#그래프 생성
+for i in range(0,34):
     plt.title('{}'.format(file_list[i]))
     plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum']],color='blue')
+    plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum2']],color='red')
     plt.xticks(size=10)
     plt.show()
     
 
-#결과파일 저장
-for i in range(0,34):
-    test_2019[i].to_csv('{}'.format(file_list[i]))
+
+
 
 #ratio 작성
-import random
-
-
-ratio =pd.DataFrame(data={'stock ticker':file_list[0:34],'NO.trades':[None],'Win%':[None],'Average gain($)':[None],'Average loss($)':[None],'Payoff ratio':[None],'Profit factor':[None]})
-
-
-ratio =pd.DataFrame(columns=['idx','stock ticker','No.trades','Win%','Average gain($)','Average loss($)','Payoff ratio','Profit factor'])
-
-
-
 for i in range(0,34):
     profit_2[i]=pd.DataFrame(profit_2[i])
 
