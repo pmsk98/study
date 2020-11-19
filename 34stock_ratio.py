@@ -82,6 +82,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import VotingClassifier
+
 
 
 
@@ -92,7 +95,8 @@ pred_naive=[]
 pred_randomforest=[]
 pred_svm=[]
 pred_knn=[]
-
+pred_neural=[]
+pred_voting=[]
 
 for i in range(0,34):
     #logistic
@@ -133,6 +137,24 @@ for i in range(0,34):
     knn.fit(x_train[i],y_train[i])
     
     pred_knn.append(knn.predict(x_test[i]))
+    #nueral
+    
+    nueral=MLPClassifier()
+    
+    nueral.fit(x_train[i],y_train[i])
+    
+    pred_neural.append(nueral.predict(x_test[i]))
+    
+    
+    #voting
+    
+    voting=VotingClassifier(estimators=[('decison',dt),('knn',knn),('logisitc',logistic),('svm',svm),('randomforest',randomforest),
+                                        ('naive',naive),('nueral',nueral)],voting='hard')
+    
+    voting.fit(x_train[i],y_train[i])
+    
+    pred_voting.append(voting.predict(x_test[i]))
+
 
         
         
@@ -152,12 +174,25 @@ for i in range(0,34):
     test_2019[i]['pred_randomforest']=pred_randomforest[i]
     test_2019[i]['pred_svm']=pred_svm[i]
     test_2019[i]['pred_knn']=pred_knn[i]
+    test_2019[i]['pred_neural']=pred_neural[i]
+    test_2019[i]['pred_voting']=pred_voting[i]
+
+
     
 
 
 #pred 자료형 변경
 for i in range(0,34):
     test_2019[i]['pred']=test_2019[i]['pred'].astype('float')
+    test_2019[i]['pred_decision']=test_2019[i]['pred_decision'].astype('float')
+    test_2019[i]['pred_naive']=test_2019[i]['pred_naive'].astype('float')
+    test_2019[i]['pred_randomforest']=test_2019[i]['pred_randomforest'].astype('float')
+    test_2019[i]['pred_svm']=test_2019[i]['pred_svm'].astype('float')
+    test_2019[i]['pred_knn']=test_2019[i]['pred_knn'].astype('float')
+    test_2019[i]['pred_neural']=test_2019[i]['pred_neural'].astype('float')
+    test_2019[i]['pred_voting']=test_2019[i]['pred_voting'].astype('float')
+    
+    
 
 #새로운 라벨 추가
 for i in range(0,34):
@@ -170,6 +205,93 @@ for i in range(0,34):
         elif test_2019[i]['pred'][e]+test_2019[i]['pred'][e+1]==2:
             test_2019[i]['position'][e+1]='holding'
         elif test_2019[i]['pred'][e] > test_2019[i]['pred'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+            
+            
+#decion tree 기준
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_decision'][e]+test_2019[i]['pred_decision'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_decision'][e]+test_2019[i]['pred_decision'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_decision'][e] > test_2019[i]['pred_decision'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+
+#naive
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_naive'][e]+test_2019[i]['pred_naive'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_naive'][e]+test_2019[i]['pred_naive'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_naive'][e] > test_2019[i]['pred_naive'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+
+#randomforest
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_randomforest'][e]+test_2019[i]['pred_randomforest'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_randomforest'][e]+test_2019[i]['pred_randomforest'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_randomforest'][e] > test_2019[i]['pred_randomforest'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+
+
+#svm
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_svm'][e]+test_2019[i]['pred_svm'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_svm'][e]+test_2019[i]['pred_svm'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_svm'][e] > test_2019[i]['pred_svm'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+
+#knn
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_knn'][e]+test_2019[i]['pred_knn'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_knn'][e]+test_2019[i]['pred_knn'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_knn'][e] > test_2019[i]['pred_knn'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+
+
+#nueral
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_neural'][e]+test_2019[i]['pred_neural'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_neural'][e]+test_2019[i]['pred_neural'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_neural'][e] > test_2019[i]['pred_neural'][e+1]:
+            test_2019[i]['position'][e+1]='sell'
+        else:
+            test_2019[i]['position'][e+1]='buy'
+
+#voting
+for i in range(0,34):
+    for e in range(1510,1761):
+        if test_2019[i]['pred_voting'][e]+test_2019[i]['pred_voting'][e+1]==0:
+            test_2019[i]['position'][e+1]='no action'
+        elif test_2019[i]['pred_voting'][e]+test_2019[i]['pred_voting'][e+1]==2:
+            test_2019[i]['position'][e+1]='holding'
+        elif test_2019[i]['pred_voting'][e] > test_2019[i]['pred_voting'][e+1]:
             test_2019[i]['position'][e+1]='sell'
         else:
             test_2019[i]['position'][e+1]='buy'
@@ -324,8 +446,10 @@ for i in range(0,34):
 
 test_2019[0]['profit_cumsum2']
 #그래프 생성
+import matplotlib.pyplot as plt
+import seaborn as sns
 for i in range(0,34):
-    plt.title('{}'.format(file_list[i]))
+    plt.title('{}_voting'.format(file_list[i]))
     plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum']],color='blue')
     plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum2']],color='red')
     plt.xticks(size=10)
