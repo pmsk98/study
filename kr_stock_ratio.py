@@ -104,34 +104,7 @@ for i in df:
 for i in range(0,75):
     df[i]=df[i].drop(['Unnamed: 0'],axis=1)
 
-#주가 동향 확인
-
-from datetime import datetime
-import time
-import matplotlib.font_manager as fm
-
-
-path='C:/Users/user/Desktop/연구/NanumBarunGothic.ttf'
-fontprop =fm.FontProperties(fname=path,size=15)
-
-
-
-time_format="%Y-%m-%d"
-
-
-
-for i in range(0,75):
-    df[i]['Date']=pd.to_datetime(df[i]['Date'],format=time_format)
-    
-
-
-for i in range(0,75):
-    
-    plt.title('{}'.format(file_list[i]),fontproperties=fontprop)
-    plt.plot(df[i][['Date']],df[i][['Close']])
-    plt.show()
-
-
+###########modeling
 
 #model train/test set 생성  
 train_data=[]
@@ -142,10 +115,10 @@ test_data=[]
 
 
 for i in range(0,75):
-    train=df[i]['Date'].str.contains('2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019')
+    train=df[i]['Date'].str.contains('2011|2012|2013|2014|2015|2016|2017')
     train_data.append(df[i][train])
 for i in range(0,75):    
-    test=df[i]['Date'].str.contains('2020')
+    test=df[i]['Date'].str.contains('2018')
     test_data.append(df[i][test])
     
 
@@ -259,7 +232,7 @@ for i in range(0,75):
 test_2019=[]
 
 for i in range(0,75):    
-    test_19=df[i]['Date'].str.contains('2020')
+    test_19=df[i]['Date'].str.contains('2018')
     test_2019.append(df[i][test_19])
     
 
@@ -303,7 +276,7 @@ np.mean(acc3)
 np.mean(acc4)
 np.mean(acc5)
 np.mean(acc6)
-
+np.mean(acc7)
 
 
 
@@ -319,152 +292,181 @@ for i in range(0,75):
     test_2019[i]['pred_voting']=test_2019[i]['pred_voting'].astype('float')
     
     
-
-#새로운 라벨 추가
+len(test_2019[74])
+#새로운 라벨 추가(e -> 인덱스 번호)
 for i in range(0,75):
     test_2019[i]['position']=None
-
+    
+test_2019[1].index    
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred'][e]+test_2019[i]['pred'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred'][e]+test_2019[i]['pred'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred'][e] > test_2019[i]['pred'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
+                
             
             
 #decion tree 기준
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_decision'][e]+test_2019[i]['pred_decision'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_decision'][e]+test_2019[i]['pred_decision'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_decision'][e] > test_2019[i]['pred_decision'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_decision'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_decision'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_decision'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 
 #naive
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_naive'][e]+test_2019[i]['pred_naive'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_naive'][e]+test_2019[i]['pred_naive'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_naive'][e] > test_2019[i]['pred_naive'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
-
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_naive'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_naive'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_naive'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 #randomforest
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_randomforest'][e]+test_2019[i]['pred_randomforest'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_randomforest'][e]+test_2019[i]['pred_randomforest'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_randomforest'][e] > test_2019[i]['pred_randomforest'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_randomforest'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_randomforest'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_randomforest'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 
 
 #svm
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_svm'][e]+test_2019[i]['pred_svm'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_svm'][e]+test_2019[i]['pred_svm'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_svm'][e] > test_2019[i]['pred_svm'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
-
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_svm'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_svm'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_svm'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 #knn
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_knn'][e]+test_2019[i]['pred_knn'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_knn'][e]+test_2019[i]['pred_knn'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_knn'][e] > test_2019[i]['pred_knn'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
-
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_knn'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_knn'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_knn'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 
 #nueral
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_neural'][e]+test_2019[i]['pred_neural'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_neural'][e]+test_2019[i]['pred_neural'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_neural'][e] > test_2019[i]['pred_neural'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_neural'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_neural'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_neural'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 
 #voting
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['pred_voting'][e]+test_2019[i]['pred_voting'][e+1]==0:
-            test_2019[i]['position'][e+1]='no action'
-        elif test_2019[i]['pred_voting'][e]+test_2019[i]['pred_voting'][e+1]==2:
-            test_2019[i]['position'][e+1]='holding'
-        elif test_2019[i]['pred_voting'][e] > test_2019[i]['pred_voting'][e+1]:
-            test_2019[i]['position'][e+1]='sell'
-        else:
-            test_2019[i]['position'][e+1]='buy'
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['pred'][e]+test_2019[i]['pred_voting'][e+1]==0:
+                test_2019[i]['position'][e+1]='no action'
+            elif test_2019[i]['pred'][e]+test_2019[i]['pred_voting'][e+1]==2:
+                test_2019[i]['position'][e+1]='holding'
+            elif test_2019[i]['pred'][e] > test_2019[i]['pred_voting'][e+1]:
+                test_2019[i]['position'][e+1]='sell'
+            else:
+                test_2019[i]['position'][e+1]='buy'
+        except:
+            pass
 
+
+#############
 
 #첫날 position이 holding일 경우 buy로 변경
 for i in range(0,75):
-    if test_2019[i]['position'][1511]=='holding':
-        test_2019[i]['position'][1511]='buy'
-    elif test_2019[i]['position'][1511]=='sell':
-        test_2019[i]['position'][1511]='buy'
+    if test_2019[i]['position'][test_2019[i].index[1]]=='holding':
+        test_2019[i]['position'][test_2019[i].index[1]]='buy'
+    elif test_2019[i]['position'][test_2019[i].index[1]]=='sell':
+        test_2019[i]['position'][test_2019[i].index[1]]='buy'
     else:
         print(i)
-        
-        
-      
+
+
 #강제 청산
 for i in range(0,75):
-    if test_2019[i]['position'][1761]=='holding':
-        test_2019[i]['position'][1761]='sell'
-    elif test_2019[i]['position'][1761]=='buy':
-        test_2019[i]['position'][1761]='sell'
-    elif test_2019[i]['position'][1761]=='no action':
-        test_2019[i]['position'][1761]='sell'
-    else:
-        print(i)
-        
-        
-#profit 생성
-len(test_2019)
+    for e in test_2019[i].index[-1:]:
+        if test_2019[i]['position'][e]=='holding':
+            test_2019[i]['position'][e]='sell'
+        elif test_2019[i]['position'][e]=='buy':
+            test_2019[i]['position'][e]='sell'
+        elif test_2019[i]['position'][e]=='no action':
+            test_2019[i]['position'][e]='sell'
+        else:
+            print(i)
+
+
+
 for i in range(0,75):
     test_2019[i]['profit']=None
     
 #다음날 수정 종가를 가져오게 생성
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['position'][e]=='buy':
-            test_2019[i]['profit'][e]=test_2019[i]['Adjusted'][e+1]
-        elif test_2019[i]['position'][e]=='sell':
-            test_2019[i]['profit'][e]=test_2019[i]['Adjusted'][e+1]
-        else:
-            print(i)
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['position'][e]=='buy':
+                test_2019[i]['profit'][e]=test_2019[i]['Close'][e+1]
+            elif test_2019[i]['position'][e]=='sell':
+                test_2019[i]['profit'][e]=test_2019[i]['Close'][e+1]
+            else:
+                print(i)
+        except:
+            pass
+
 
 
 for i in range(0,75):
-    if test_2019[i]['position'][1761]=='sell':
-        test_2019[i]['profit'][1761]=test_2019[i]['Adjusted'][1761]
+    for e in test_2019[i].index[-1:]:
+        if test_2019[i]['position'][e]=='sell':
+            test_2019[i]['profit'][e]=test_2019[i]['Close'][e]
         
 ####
 
@@ -482,8 +484,8 @@ for i in range(0,75):
 buy=[]
 sell=[]
 for i in range(0,75):
-    buy.append(buy_label[i]['Adjusted'].reset_index(drop=True))
-    sell.append(sell_label[i]['Adjusted'].reset_index(drop=True))
+    buy.append(buy_label[i]['Close'].reset_index(drop=True))
+    sell.append(sell_label[i]['Close'].reset_index(drop=True))
     
   
 profit_2=[]    
@@ -516,20 +518,21 @@ for i in range(0,75):
 
 #profit 누적 합 
 for i in range(0,75):
-    for e in range(1510,1761):
-        if test_2019[i]['position'][e]=='holding':
-            test_2019[i]['profit_2'][e]=0
-        elif test_2019[i]['position'][e]=='no action':
-            test_2019[i]['profit_2'][e]=0
-        elif test_2019[i]['position'][e]=='buy':
-            test_2019[i]['profit_2'][e]=0
-        else:
-            print(i)
+    for e in test_2019[i].index:
+        try:
+            if test_2019[i]['position'][e]=='holding':
+                test_2019[i]['profit_2'][e]=0
+            elif test_2019[i]['position'][e]=='no action':
+                test_2019[i]['profit_2'][e]=0
+            elif test_2019[i]['position'][e]=='buy':
+                test_2019[i]['profit_2'][e]=0
+            else:
+                print(i)
+        except:
+            pass
 
 
 #새로운 청산 기준 누적합
-
-
 
 for i in range(0,75):
     test_2019[i]['profit_cumsum2']=None    
@@ -556,7 +559,7 @@ for i in range(0,75):
     
 #diff 컬럼 생성(새로운 청산 기준)
 for i in range(0,75):
-    test_2019[i]['diff']=test_2019[i]['Adjusted'].diff()
+    test_2019[i]['diff']=test_2019[i]['Close'].diff()
     
 for i in range(0,75):
     test_2019[i]['diff'][1510]=0
@@ -574,8 +577,14 @@ test_2019[0]['profit_cumsum2']
 #그래프 생성
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+path='C:/Users/user/Desktop/연구/NanumBarunGothic.ttf'
+fontprop =fm.FontProperties(fname=path,size=15)
+
+
+
 for i in range(0,75):
-    plt.title('{}_voting'.format(file_list[i]))
+    plt.title('{}'.format(file_list[i]),fontproperties=fontprop)
     plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum']],color='blue')
     plt.plot(test_2019[i][['Date']],test_2019[i][['profit_cumsum2']],color='red')
     plt.xticks(size=10)
@@ -583,7 +592,7 @@ for i in range(0,75):
     
 
 
-
+#################
 
 #ratio 작성
 for i in range(0,75):
@@ -604,15 +613,15 @@ for i in range(0,75):
    
 for i in range(0,75):
     for e in range(len(profit_2[i])):      
-        if profit_2[i]['Adjusted'][e] > 0:
+        if profit_2[i]['Close'][e] > 0:
             profit_2[i]['average'][e]='gain'
         else:
             profit_2[i]['average'][e]='loss'
             
 for i in range(0,75):
     for e in range(len(profit_2[i])):
-        if profit_2[i]['Adjusted'][e] < 0:
-            profit_2[i]['Adjusted'][e]=profit_2[i]['Adjusted'][e] * -1
+        if profit_2[i]['Close'][e] < 0:
+            profit_2[i]['Close'][e]=profit_2[i]['Close'][e] * -1
         else:
             print(i)
 
@@ -631,19 +640,29 @@ for i in range(0,75):
 real_gain=[]
 
 for i in range(0,75):
-    real_gain.append(gain[i]['Adjusted'][0])
-    
+    real_gain.append(gain[i]['Close'][0])
+
+win
+
 #평균 손실
 loss=[]
 
 for i in range(0,75):
-    loss.append(gain[i]['Adjusted'][1])
-  
+    try:
+        loss.append(gain[i]['Close'][1])
+    except:
+        loss.append('0')
+
+    
+loss
 #payoff ratio
 payoff=[]
 
 for i in range(0,75):
-    payoff.append(gain[i]['Adjusted'][0]/gain[i]['Adjusted'][1])
+    try:
+        payoff.append(gain[i]['Close'][0]/gain[i]['Close'][1])
+    except:
+        payoff.append('inf')
     
 #profit factor
 
@@ -656,13 +675,20 @@ for i in range(0,75):
 factor=[]
 
 for i in range(0,75):
-    factor.append(factor_sum[i]['Adjusted'][0]/factor_sum[i]['Adjusted'][1])
+    factor.append(factor_sum[i]['Close'][0]/factor_sum[i]['Close'][1])
 
+#year
+year=[]
+
+for i in range(0,75):
+    year.append('2018')
 
 #최종 결과물 파일 작성
-stock_name=pd.DataFrame({'stock_ticker':file_list})
+stock_name=pd.DataFrame({'stock_name':file_list})
 
 stock_name=stock_name.replace('.csv','',regex=True)
+
+year=pd.DataFrame({'year':year})
 
 trade=pd.DataFrame({'No.trades':trade})
 
@@ -676,4 +702,42 @@ payoff=pd.DataFrame({'Payoff ratio':payoff})
 
 factor=pd.DataFrame({'Profit factor':factor})
 
-result =pd.concat([stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+#########################
+result =pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+result1=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+result2=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+result3=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+result4=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+
+final_result=pd.concat([result,result1,result2,result3,result4])
+
+
+final_result.to_csv('kr_stock_ratio_method1.csv',encoding='euc-kr')
+
+######### 두 번째 방법 ################# 여기서부터
+#2016
+result
+
+#2017
+result5=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+#2018
+result6=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+#2019
+result7=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+#2020
+result8=pd.concat([year,stock_name,trade,win,real_gain,loss,payoff,factor],axis=1)
+
+
+final_result2=pd.concat([result,result5,result6,result7,result8])
+
+
+final_result2.to_csv('kr_stock_ratio_method2.csv',encoding='euc-kr')
